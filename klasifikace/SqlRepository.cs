@@ -35,15 +35,40 @@ namespace klasifikace
         }
         public List<Student> GetStudents()
         {
-            using (SqlConnection sqlConnection = new SqlConnection(connString))
+            List<Student> students = new List<Student>();
+            try
             {
-                sqlConnection.Open();
-                //List<Student> students = new List<Student>();
-                sqlConnection.Close();
-            }
+                using (SqlConnection sqlConnection = new SqlConnection(connString))
+                {
+                    sqlConnection.Open();
+                    using (SqlCommand sqlCommand = new SqlCommand())
+                    {
+                        sqlCommand.Connection = sqlConnection;
+                        sqlCommand.CommandText = "SELECT * FROM Student";
+                        using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                        {
+                            while (sqlDataReader.Read())
+                            {
+                                students.Add(new Student()
+                                {
+                                    Id = Convert.ToInt32(sqlDataReader["IdStudent"]),
+                                    Firstname = sqlDataReader["Firstname"].ToString(),
+                                    Lastname = sqlDataReader["Lastname"].ToString(),
+                                    Birthday = Convert.ToDateTime(sqlDataReader["Birthday"])
+                                });
 
-            return TempStudents();
-            //return students;
+                            }
+                        }
+                    }
+                    sqlConnection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Some error happened (Exception: ur mom)" + ex.Message);
+            }
+            //return TempStudents();
+            return students;
         }
     }
 }
