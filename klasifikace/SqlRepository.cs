@@ -83,7 +83,7 @@ namespace klasifikace
             {
                 using (SqlCommand sqlCommand= new SqlCommand("", sqlConnection))
                 {
-                    sqlCommand.CommandText();
+                    sqlCommand.CommandText = "";
                 }
             }
             return grades;
@@ -127,17 +127,15 @@ namespace klasifikace
         }
         public List<Teacher> GetTeachers()
         {
-            return teachers.SelectMany(t=>t.Value);
+            return teachers.Values.AsEnumerable().ToList();
         }
         public Teacher GetTeacher(int id)
         {
-            foreach(var teacher in teachers)
-            {
-                if (teacher.Id == id)
+                if (teachers.ContainsKey(id))
                 {
-                    return teacher;
+                    return teachers[id];
                 }
-            }
+            
             return null;
         }
     }
